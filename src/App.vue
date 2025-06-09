@@ -1,55 +1,82 @@
+<script setup lang="ts">
+import Coord from "./components/Debug/Coord.vue";
+import AdvTooltip from "./components/Tooltip/AdvTooltip.vue";
+import TooltipLayer from "./components/TooltipLayer/TooltipLayer.vue";
+import { serializehtml } from "./components/utils/serialize";
+import { useSharedMouse } from "./types/state";
+
+const { ndx, ndy, lx, ly, x, y } = useSharedMouse();
+</script>
+
 <template>
-  <article
-    class="container px-5 mx-auto h-screen flex flex-col items-center justify-center"
-  >
-    <div class="mb-12 text-center">
-      <figure class="text-4xl">🚀</figure>
-      <h1 class="text-4xl font-bold">Vue Advance Tooltips</h1>
+    <TooltipLayer clip-parent />
+    <div class="h-screen root w-screen">
+        <div class="cont h-full">
+            <div class="flex">
+                <AdvTooltip>
+                    <div class="w-min">Static Test</div>
+                    <template #tip>
+                        <div class="">Wow great!</div>
+                    </template>
+                </AdvTooltip>
+            </div>
+            <div class="grow items-center justify-center flex">
+                <AdvTooltip>
+                    <div class="w-min">Center Test</div>
+                    <template #tip>
+                        <div>This is the tooltip</div>
+                    </template>
+                </AdvTooltip>
+
+                <AdvTooltip>
+                    <div>Nested Test</div>
+                    <template #tip>
+                        <div>
+                            Hover here, there is a toooltip below
+                            <br />
+                            <AdvTooltip>
+                                <div class="underline">This is the tooltip</div>
+                                <template #tip>
+                                    <div>Nested Tooltip</div>
+                                </template>
+                            </AdvTooltip>
+                        </div>
+                    </template>
+                </AdvTooltip>
+            </div>
+            <div class="flex">
+                <AdvTooltip>
+                    <div class="w-min ml-auto">Static Test</div>
+                    <template #tip>
+                        <div class="">Wow great!</div>
+                    </template>
+                </AdvTooltip>
+            </div>
+            <pre class="text-xs" v-html="serializehtml({ ndx, ndy })" />
+            <Coord :data="[lx, ly]" color="border-cyan-400" />
+            <Coord :data="[x, y]" color="border-green-400" />
+        </div>
     </div>
-
-    <el-alert title="Success alert" type="success" effect="dark" />
-
-    <div id="links" class="inline-flex gap-4">
-      <!-- LINK TO STORY BOOK -->
-      <!-- LINK TO TEST COVERAGE -->
-      <!-- GITHUB -->
-    </div>
-
-    <p
-      class="block text-xs font-medium text-neutral-500 uppercase tracking-widest mt-12"
-    >
-      Built with
-    </p>
-    <ul class="inline-flex flex-wrap gap-4 mt-4 text-xs justify-center">
-      <li
-        class="font-medium font-mono bg-amber-100 text-amber-900 py-1 px-4 rounded-full"
-      >
-        Vite
-      </li>
-      <li
-        class="font-medium font-mono bg-amber-100 text-amber-900 py-1 px-4 rounded-full"
-      >
-        Vue3
-      </li>
-      <li
-        class="font-medium font-mono bg-amber-100 text-amber-900 py-1 px-4 rounded-full"
-      >
-        Typescript
-      </li>
-      <li
-        class="font-medium font-mono bg-amber-100 text-amber-900 py-1 px-4 rounded-full"
-      >
-        Tailwind
-      </li>
-      <li
-        class="font-medium font-mono bg-amber-100 text-amber-900 py-1 px-4 rounded-full"
-      >
-        Storybook
-      </li>
-    </ul>
-  </article>
 </template>
 
-<script setup lang="ts"></script>
+<style lang="scss" scoped>
+.root {
+    @apply p-2;
+    @apply bg-neutral-800 text-white;
 
-<style scoped></style>
+    .cont {
+        @apply flex gap-2 flex-col;
+        div {
+            @apply p-2 px-4;
+            @apply border border-neutral-400 rounded-full;
+        }
+    }
+}
+
+.dev {
+    @apply text-red-400;
+    &:hover {
+        @apply text-cyan-500;
+    }
+}
+</style>

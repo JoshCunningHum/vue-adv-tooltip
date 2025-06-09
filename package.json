@@ -34,6 +34,7 @@
     "@storybook/vue3": "^8.2.9",
     "@storybook/vue3-vite": "^8.2.9",
     "@vitejs/plugin-vue": "^5.1.2",
+    "@vue/typescript-plugin": "^2.2.10",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.41",
     "sass-embedded": "^1.77.8",
