@@ -128,9 +128,11 @@ const parent = useParentElement();
 
 // # Trigger hovering (with delay)
 const showDelayMS = computed(() => options.value.delayMs || 0);
-const { start: showTrigger } = useTimeoutFn(() => set(hover.trigger, true), showDelayMS, {
-    immediate: false,
-});
+const { start: showTrigger, stop: stopShowTrigger } = useTimeoutFn(
+    () => set(hover.trigger, true),
+    showDelayMS,
+    { immediate: false }
+);
 
 useTriggerBinder({
     leftBound: _left,
@@ -138,7 +140,10 @@ useTriggerBinder({
     parent,
     event: {
         mouseEnter: showTrigger,
-        mouseLeave: () => set(hover.trigger, false),
+        mouseLeave: () => {
+            stopShowTrigger();
+            set(hover.trigger, false);
+        },
     },
 });
 

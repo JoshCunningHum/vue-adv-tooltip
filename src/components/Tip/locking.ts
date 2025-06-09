@@ -104,9 +104,6 @@ export const useTipLocking = ({ options: _options }: TipLockingProps) => {
     watch(
         [hover.tip, hover.trigger],
         async () => {
-            console.log(options.value.unlockKey);
-            if (options.value.unlockKey) return;
-            if (options.value.onlyUnlockOnClick) return;
             if (hover.tip.value || hover.trigger.value || stacked.value) return;
             set(locked, false);
         },
