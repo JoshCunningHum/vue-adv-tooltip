@@ -1,7 +1,7 @@
 <script lang="ts">
 import { TooltipDirectiveOptions, TooltipOptionBase, TooltipStyles } from "@/types/common";
 import { useAdvLayerHelper } from "@/types/state.layer";
-import { controlledRef, useParentElement, watchImmediate, whenever } from "@vueuse/core";
+import { useParentElement, watchImmediate, whenever } from "@vueuse/core";
 import { serializehtml } from "../utils/serialize";
 
 export interface TooltipLayerProps extends Omit<TooltipOptionBase, "text"> {
@@ -39,7 +39,7 @@ export interface TooltipLayerContext {
 
 <script setup lang="ts">
 import { dev, TT_CONFIG_KEY, TT_DEFAULTS, TT_TELEPORT_ID } from "@/constants";
-import { computed, ComputedRef, inject, nextTick, Ref } from "vue";
+import { computed, ComputedRef, inject, nextTick, Ref, watch } from "vue";
 
 const props = defineProps<TooltipLayerProps>();
 
@@ -62,7 +62,10 @@ whenever(
 
 // Register  theme in the stack
 const { context } = useAdvLayerHelper({});
-watchImmediate(theme, () => (context.theme.value = theme.value));
+watchImmediate(
+    () => props,
+    (v) => (context.options.value = { ...v, theme: theme.value })
+);
 
 // Stack
 const { stack, top } = context;

@@ -5,9 +5,10 @@ import { promiseTimeout, whenever } from "@vueuse/core";
 import { clone } from "@/components/utils/clone";
 import { TT_RENDER_DELAYS_MS } from "@/constants";
 
-const AdvTipHelper = ({ id, hover, locked, nested, origin }: AdvTooltipContext) => {
+const AdvTipHelper = ({ id, hover }: AdvTooltipContext) => {
     const { context: _ } = useAdvLayerHelper({});
-    const { stack, theme, top } = _;
+    const { stack, options: layer, top } = _;
+    const theme = computed(() => layer.value.theme);
 
     /**
      * What index of the stack is the current tooltip.
@@ -34,7 +35,7 @@ const AdvTipHelper = ({ id, hover, locked, nested, origin }: AdvTooltipContext) 
      * Add condition:
      * - When the tooltip is hovered: add in the stack
      */
-    whenever(hover.tip, add, { flush: "pre" });
+    whenever(hover.tip, add);
 
     // Execute when closing a child/nested tooltip (changing the 'top')
     // Check if it is still 'hovering' on the parent (this)
@@ -44,30 +45,24 @@ const AdvTipHelper = ({ id, hover, locked, nested, origin }: AdvTooltipContext) 
         remove();
     });
 
-    watch(
-        hover.tip,
-        async (onTip) => {
-            /**
-             * Remove condition
-             * - When trigger gets unmounted
-             * - When tip is not hovered anymore and not on the stack but also not on top
-             */
+    watch(hover.tip, async (onTip) => {
+        /**
+         * Remove condition
+         * - When trigger gets unmounted
+         * - When tip is not hovered anymore and not on the stack but also not on top
+         */
 
-            if (onTip) return;
+        if (onTip) return;
 
-            await promiseTimeout(TT_RENDER_DELAYS_MS);
+        await promiseTimeout(TT_RENDER_DELAYS_MS);
 
-            const topId = top.value?.id;
-            console.log(`Attempt remove: ${id}`, clone(stack.value));
+        const topId = top.value?.id;
+        console.log(`Attempt remove: ${id}`, clone(stack.value));
 
-            if (inStack.value && topId !== id) return;
+        if (inStack.value && topId !== id) return;
 
-            remove();
-        },
-        {
-            flush: "post",
-        }
-    );
+        remove();
+    });
 
     // Auto-remove when unmounted
     onBeforeUnmount(remove);
@@ -76,6 +71,7 @@ const AdvTipHelper = ({ id, hover, locked, nested, origin }: AdvTooltipContext) 
         index,
         theme,
         inStack,
+        options: layer,
 
         add,
         remove,

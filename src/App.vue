@@ -3,13 +3,14 @@ import Coord from "./components/Debug/Coord.vue";
 import AdvTooltip from "./components/Tooltip/AdvTooltip.vue";
 import TooltipLayer from "./components/TooltipLayer/TooltipLayer.vue";
 import { serializehtml } from "./components/utils/serialize";
+import { dev } from "./constants";
 import { useSharedMouse } from "./types/state";
 
 const { ndx, ndy, lx, ly, x, y } = useSharedMouse();
 </script>
 
 <template>
-    <TooltipLayer clip-parent />
+    <TooltipLayer clip-parent lock-key="t" unlock-key="Escape" :delay-ms="250" />
     <div class="h-screen root w-screen">
         <div class="cont h-full">
             <div class="flex">
@@ -25,29 +26,20 @@ const { ndx, ndy, lx, ly, x, y } = useSharedMouse();
                         </div>
                     </template>
                 </AdvTooltip>
-                <AdvTooltip>
+                <AdvTooltip direction="topright">
                     <div>Nested Test</div>
-                    <template #tip="{ locked }">
-                        <div :class="[locked && 'border border-red-500']">
+                    <template #tip>
+                        <div>
                             Hover here, there is a toooltip below
                             <br />
                             <AdvTooltip>
-                                <div :class="[locked && 'border border-red-500']" class="underline">
-                                    This is the tooltip
-                                </div>
-                                <template #tip="{ locked }">
+                                <div class="underline">This is the tooltip</div>
+                                <template #tip>
                                     <div>This is a tooltip inside tooltip</div>
                                     <AdvTooltip>
-                                        <div
-                                            :class="[locked && 'border border-red-500']"
-                                            class="underline"
-                                        >
-                                            What if you hover here?
-                                        </div>
-                                        <template #tip="{ locked }">
-                                            <div :class="[locked && 'border border-red-500']">
-                                                A very nested tooltip
-                                            </div>
+                                        <div class="underline">What if you hover here?</div>
+                                        <template #tip>
+                                            <div>A very nested tooltip</div>
                                         </template>
                                     </AdvTooltip>
                                 </template>
@@ -91,8 +83,10 @@ const { ndx, ndy, lx, ly, x, y } = useSharedMouse();
             <div class="flex justify-between items-center" id="dev-display">
                 <pre class="text-xs" v-html="serializehtml({ ndx, ndy })" />
             </div>
-            <Coord :data="[lx, ly]" color="border-cyan-400" />
-            <Coord :data="[x, y]" color="border-green-400" />
+            <template v-if="dev">
+                <Coord :data="[lx, ly]" color="border-cyan-400" />
+                <Coord :data="[x, y]" color="border-green-400" />
+            </template>
         </div>
     </div>
 </template>

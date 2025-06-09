@@ -1,14 +1,14 @@
 // Dictates the whole locking and origin-locked compoutation of tooltips
 
 import { TT_DEFAULTS } from "@/constants";
-import { promiseTimeout, set, toRefs, useTimeoutFn, watchImmediate } from "@vueuse/core";
+import { useSharedMouse } from "@/types/state";
+import { onKeyStroke, set, toRefs, useTimeoutFn, watchImmediate } from "@vueuse/core";
 import { computed, MaybeRefOrGetter, onBeforeMount, onBeforeUnmount, toValue, watch } from "vue";
 import { AdvTooltipProps, injectAdvTooltipContext } from "../Tooltip/AdvTooltip.vue";
 import { normalizeOptions } from "../utils/extractor.options";
-import { useSharedMouse } from "@/types/state";
-import { DIR_VECTORS } from "./positioning";
-import { mMult, vAdd } from "../utils/vector";
 import { extpos, setpos } from "../utils/pos";
+import { mMult, vAdd } from "../utils/vector";
+import { DIR_VECTORS } from "./positioning";
 
 interface TipLockingProps {
     options: MaybeRefOrGetter<AdvTooltipProps>;
@@ -25,7 +25,8 @@ export const useTipLocking = ({ options: _options }: TipLockingProps) => {
         containerSize: size,
     } = injectAdvTooltipContext();
 
-    const delay = computed(() => options.value.delayMS || TT_DEFAULTS.delayMS!);
+    // # Locked MS Delay
+    const delay = computed(() => options.value.delayMs || TT_DEFAULTS.delayMs!);
     const { start, stop } = useTimeoutFn(() => set(locked, true), delay);
 
     // When hovering the trigger, wait for DEFAULT_SECONDS to lock
@@ -34,6 +35,31 @@ export const useTipLocking = ({ options: _options }: TipLockingProps) => {
         if (hovered) start();
         else stop();
     });
+
+    // # Locked on key
+    // ? Note: this is not reactive because why? When I see a usecase is provided for a changing-lock-key, I will create a watcher for this
+    if (options.value.lockKey) {
+        console.log(options.value.unlockKey);
+        onKeyStroke(
+            options.value.lockKey,
+            () => {
+                if (!locked.value) set(locked, true);
+            },
+            { dedupe: true }
+        );
+    }
+
+    // # Unlock on key
+    if (options.value.unlockKey) {
+        onKeyStroke(
+            options.value.unlockKey,
+            () => {
+                console.log("test");
+                if (locked.value) set(locked, false);
+            },
+            { dedupe: true }
+        );
+    }
 
     // Compute mouse direction for follow / lock of container
     const { w: cbW, h: cbH } = toRefs(
@@ -74,13 +100,13 @@ export const useTipLocking = ({ options: _options }: TipLockingProps) => {
         { flush: "pre" } // Prevent the tooltip from moving at more tick
     );
 
-    // Update the original-locked
-
     // Unlock when trigger and tip is unhovered
-    // TODO: Detect option for onlyUnlockOnClick
     watch(
         [hover.tip, hover.trigger],
         async () => {
+            console.log(options.value.unlockKey);
+            if (options.value.unlockKey) return;
+            if (options.value.onlyUnlockOnClick) return;
             if (hover.tip.value || hover.trigger.value || stacked.value) return;
             set(locked, false);
         },

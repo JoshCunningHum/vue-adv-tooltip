@@ -36,6 +36,7 @@ const {
     origin: { locked: lock, normal },
     hover: { tip, trigger },
     locked,
+    id,
 } = context;
 
 // Handle Locking
@@ -45,22 +46,22 @@ useTipLocking({ options });
 <template>
     <div
         class="origin-point"
-        :class="[theme.originPoint]"
+        :class="[theme.originPoint, locked && theme.originPointLocked]"
         :style="{ left: lock.x.value + 'px', top: lock.y.value + 'px' }"
     >
         <div class="backdrop" :class="options.backdropClassOnLock"></div>
         <div
-            class="t-container"
+            class="_container"
             :style="{
-                top: -shift.y + 'px',
                 left: -shift.x + 'px',
+                top: -shift.y + 'px',
             }"
-            :class="[theme.container, { locked }]"
+            :class="[theme.container, locked && theme.containerLocked]"
             @mouseenter="tip = true"
             @mouseleave="tip = false"
             ref="container"
         >
-            <div class="content text-xs" :class="theme.content">
+            <div class="content" :class="[theme.content, locked && theme.contentLocked]">
                 <slot />
             </div>
         </div>
@@ -70,7 +71,19 @@ useTipLocking({ options });
             <pre
                 class="debug text-xs absolute bg-neutral-950/80"
                 :style="{ top: shift.y + containerSize.height.value + 'px', left: -shift.x + 'px' }"
-                v-html="serializehtml({ shift, locked, tip, trigger, normal, lock, dir })"
+                v-html="
+                    serializehtml({
+                        shift,
+                        locked,
+                        tip,
+                        trigger,
+                        normal,
+                        lock,
+                        dir,
+                        ogdir: props.options.direction,
+                        id,
+                    })
+                "
             />
         </template>
     </div>
@@ -84,16 +97,8 @@ useTipLocking({ options });
     @apply overflow-visible;
 }
 
-.t-container {
+._container {
     @apply w-max;
     @apply absolute;
-
-    &.locked {
-    }
-}
-
-.content {
-}
-.backdrop {
 }
 </style>

@@ -2,6 +2,7 @@
 import { TooltipDirection, TooltipOptionBase } from "@/types/common";
 import { createContext } from "../utils/createContext";
 import { extposref, pos, setpos } from "../utils/pos";
+import { removeUndefineds } from "../utils/sanitize";
 
 export interface AdvTooltipProps extends Omit<TooltipOptionBase, "text"> {
     preload?: boolean;
@@ -55,9 +56,9 @@ export const [injectAdvTooltipContext, provideAdvTooltipContext] =
 </script>
 
 <script setup lang="ts">
-import { TT_TELEPORT_ID } from "@/constants";
+import { TT_DEFAULTS, TT_TELEPORT_ID } from "@/constants";
 import { useAdvTipHelper } from "@/types/state.tip";
-import { set, syncRef, useParentElement } from "@vueuse/core";
+import { set, syncRef, useParentElement, useTimeoutFn } from "@vueuse/core";
 import { computed, ref, Ref, useId, useTemplateRef, watch } from "vue";
 import Tip from "../Tip/Tip.vue";
 import { useTriggerBinder } from "./triggerhover";
@@ -111,26 +112,37 @@ const context = provideAdvTooltipContext({
     containerSize,
 });
 
-const { theme, inStack } = useAdvTipHelper(context);
+const { theme: layerTheme, inStack, options: layerOptions } = useAdvTipHelper(context);
+
+const theme = computed(() => Object.assign({}, TT_DEFAULTS.theme, layerTheme.value, props.theme));
 syncRef(stacked, inStack, { direction: "rtl" });
+
+const options = computed(() =>
+    Object.assign({}, TT_DEFAULTS, layerOptions.value, removeUndefineds({ ...props }))
+);
 
 // # Handle Trigger Event Bindings
 const _left = useTemplateRef("left-bound");
 const _right = useTemplateRef("right-bound");
 const parent = useParentElement();
 
+// # Trigger hovering (with delay)
+const showDelayMS = computed(() => options.value.delayMs || 0);
+const { start: showTrigger } = useTimeoutFn(() => set(hover.trigger, true), showDelayMS, {
+    immediate: false,
+});
+
 useTriggerBinder({
     leftBound: _left,
     rightBound: _right,
     parent,
     event: {
-        mouseEnter: () => set(hover.trigger, true),
+        mouseEnter: showTrigger,
         mouseLeave: () => set(hover.trigger, false),
     },
 });
 
 // # Show the tip
-// TODO: Add check if this tip is inside the stack
 const shown = computed(() => hover.tip.value || hover.trigger.value || inStack.value);
 </script>
 
@@ -140,7 +152,7 @@ const shown = computed(() => hover.tip.value || hover.trigger.value || inStack.v
     <span class="bound" ref="right-bound" :id="id + 'right'" />
 
     <Teleport :to="'#' + TT_TELEPORT_ID" defer>
-        <Tip v-if="shown" :theme :options="props">
+        <Tip v-if="shown" :theme :options>
             <slot name="tip" :hovered="hover.tip.value" :locked>
                 {{ props.text || "" }}
             </slot>

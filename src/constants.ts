@@ -16,14 +16,16 @@ export const TT_DEFAULTS: TooltipOptionBase = {
     text: "", // Doesn't matter
     offset: [8, 8],
     direction: "auto",
-    delayMS: 500,
+    delayMs: 250,
     theme: {
         container: "",
-        content: "border rounded-md border-neutral-600 bg-neutral-800 p-2",
+        content: "text-xs border rounded-md border-neutral-600 bg-neutral-800 p-2",
         originPoint: "",
+
+        contentLocked: "!border-transparent shadow-[inset_0px_0px_35px_-15px_#00d0ff]",
     },
 };
 
 // DEV
-export const dev = import.meta.env.DEV;
-// export const dev = false;
+// export const dev = import.meta.env.DEV;
+export const dev = false;
