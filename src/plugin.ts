@@ -8,7 +8,7 @@ export const AdvTooltipPlugin = {
     install: (app: App, options: TooltipPluginOptions = {}) => {
         const config = Object.assign(DefaultPluginOption, options);
 
-        const { componentName, directiveName, unstyled } = config;
+        const { componentName, directiveName } = config;
 
         // Reactive config to be usable on app instance
         const _config = reactive(config);

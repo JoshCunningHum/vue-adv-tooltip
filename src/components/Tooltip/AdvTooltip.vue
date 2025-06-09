@@ -45,6 +45,7 @@ export interface AdvTooltipContext {
         locked: Ref<TooltipDirection>;
     };
     locked: Ref<boolean>;
+    stacked: Ref<boolean>;
     nested: Ref<boolean>;
     containerSize: V;
 }
@@ -56,7 +57,7 @@ export const [injectAdvTooltipContext, provideAdvTooltipContext] =
 <script setup lang="ts">
 import { TT_TELEPORT_ID } from "@/constants";
 import { useAdvTipHelper } from "@/types/state.tip";
-import { set, useParentElement } from "@vueuse/core";
+import { set, syncRef, useParentElement } from "@vueuse/core";
 import { computed, ref, Ref, useId, useTemplateRef, watch } from "vue";
 import Tip from "../Tip/Tip.vue";
 import { useTriggerBinder } from "./triggerhover";
@@ -95,6 +96,7 @@ watch(dir.normal, (value) => {
 });
 
 const nested = ref(false);
+const stacked = ref(false);
 const containerSize = pos(1, 1);
 
 // # Provide context
@@ -103,12 +105,14 @@ const context = provideAdvTooltipContext({
     id,
     locked,
     nested,
+    stacked,
     origin,
     dir,
     containerSize,
 });
 
-const { theme } = useAdvTipHelper(context);
+const { theme, inStack } = useAdvTipHelper(context);
+syncRef(stacked, inStack, { direction: "rtl" });
 
 // # Handle Trigger Event Bindings
 const _left = useTemplateRef("left-bound");
@@ -127,14 +131,13 @@ useTriggerBinder({
 
 // # Show the tip
 // TODO: Add check if this tip is inside the stack
-const shown = computed(() => hover.tip.value || hover.trigger.value);
+const shown = computed(() => hover.tip.value || hover.trigger.value || inStack.value);
 </script>
 
 <template>
     <span class="bound" ref="left-bound" :id="id + 'left'" />
     <slot name="default" />
     <span class="bound" ref="right-bound" :id="id + 'right'" />
-    <!-- <pre> {{ serialize({ locked, ...hover, trigger, normal, lock, dir }) }} </pre> -->
 
     <Teleport :to="'#' + TT_TELEPORT_ID" defer>
         <Tip v-if="shown" :theme :options="props">

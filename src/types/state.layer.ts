@@ -1,7 +1,7 @@
+import { TooltipStackItem } from "@/components/TooltipLayer/TooltipLayer.vue";
 import { createSharedComposable } from "@vueuse/core";
+import { computed, ref } from "vue";
 import { useSharedMouse } from "./state";
-import { TooltipLayerContext } from "@/components/TooltipLayer/TooltipLayer.vue";
-import { ref } from "vue";
 
 //
 interface AdvLayerHelperProps {}
@@ -10,15 +10,18 @@ const AdvLayerHelper = ({}: AdvLayerHelperProps) => {
     const { x: mx, y: my } = useSharedMouse();
 
     // # Layer Context
-    const context: TooltipLayerContext = {
-        theme: ref({}),
-        data: ref({ stack: [], top: undefined }),
-    };
+    const theme = ref({});
+    const stack = ref<TooltipStackItem[]>([]);
+    const top = computed(() => stack.value.at(-1));
 
     return {
         mx,
         my,
-        context,
+        context: {
+            theme,
+            stack,
+            top,
+        },
     };
 };
 

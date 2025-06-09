@@ -1,7 +1,8 @@
 <script lang="ts">
 import { TooltipDirectiveOptions, TooltipOptionBase, TooltipStyles } from "@/types/common";
 import { useAdvLayerHelper } from "@/types/state.layer";
-import { useParentElement, watchImmediate, whenever } from "@vueuse/core";
+import { controlledRef, useParentElement, watchImmediate, whenever } from "@vueuse/core";
+import { serializehtml } from "../utils/serialize";
 
 export interface TooltipLayerProps extends Omit<TooltipOptionBase, "text"> {
     preload?: boolean;
@@ -31,13 +32,14 @@ export interface TooltipStackData {
 // # Layer Context
 export interface TooltipLayerContext {
     theme: Ref<TooltipStyles>;
-    data: Ref<TooltipStackData>;
+    stack: Ref<TooltipStackItem[]>;
+    top?: ComputedRef<TooltipStackItem | undefined>;
 }
 </script>
 
 <script setup lang="ts">
-import { TT_CONFIG_KEY, TT_DEFAULTS, TT_TELEPORT_ID } from "@/constants";
-import { computed, inject, nextTick, Ref } from "vue";
+import { dev, TT_CONFIG_KEY, TT_DEFAULTS, TT_TELEPORT_ID } from "@/constants";
+import { computed, ComputedRef, inject, nextTick, Ref } from "vue";
 
 const props = defineProps<TooltipLayerProps>();
 
@@ -63,11 +65,14 @@ const { context } = useAdvLayerHelper({});
 watchImmediate(theme, () => (context.theme.value = theme.value));
 
 // Stack
-const stack = context.data;
+const { stack, top } = context;
 </script>
 
 <template>
     <div class="tooltiplayer" :id="TT_TELEPORT_ID"></div>
+    <Teleport :disabled="!dev" defer to="#dev-display" v-if="dev">
+        <pre id="dev-stack-display" class="text-xs" v-html="serializehtml({ stack, top })" />
+    </Teleport>
 </template>
 
 <style lang="scss" scoped>

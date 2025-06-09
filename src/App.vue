@@ -15,8 +15,44 @@ const { ndx, ndy, lx, ly, x, y } = useSharedMouse();
             <div class="flex">
                 <AdvTooltip>
                     <div class="w-min">Static Test</div>
-                    <template #tip>
-                        <div class="">Wow great!</div>
+                    <template #tip="{ locked }">
+                        <div
+                            :class="{
+                                'border border-red-500': locked,
+                            }"
+                        >
+                            Wow great!
+                        </div>
+                    </template>
+                </AdvTooltip>
+                <AdvTooltip>
+                    <div>Nested Test</div>
+                    <template #tip="{ locked }">
+                        <div :class="[locked && 'border border-red-500']">
+                            Hover here, there is a toooltip below
+                            <br />
+                            <AdvTooltip>
+                                <div :class="[locked && 'border border-red-500']" class="underline">
+                                    This is the tooltip
+                                </div>
+                                <template #tip="{ locked }">
+                                    <div>This is a tooltip inside tooltip</div>
+                                    <AdvTooltip>
+                                        <div
+                                            :class="[locked && 'border border-red-500']"
+                                            class="underline"
+                                        >
+                                            What if you hover here?
+                                        </div>
+                                        <template #tip="{ locked }">
+                                            <div :class="[locked && 'border border-red-500']">
+                                                A very nested tooltip
+                                            </div>
+                                        </template>
+                                    </AdvTooltip>
+                                </template>
+                            </AdvTooltip>
+                        </div>
                     </template>
                 </AdvTooltip>
             </div>
@@ -52,7 +88,9 @@ const { ndx, ndy, lx, ly, x, y } = useSharedMouse();
                     </template>
                 </AdvTooltip>
             </div>
-            <pre class="text-xs" v-html="serializehtml({ ndx, ndy })" />
+            <div class="flex justify-between items-center" id="dev-display">
+                <pre class="text-xs" v-html="serializehtml({ ndx, ndy })" />
+            </div>
             <Coord :data="[lx, ly]" color="border-cyan-400" />
             <Coord :data="[x, y]" color="border-green-400" />
         </div>
@@ -66,7 +104,7 @@ const { ndx, ndy, lx, ly, x, y } = useSharedMouse();
 
     .cont {
         @apply flex gap-2 flex-col;
-        div {
+        div:not(#dev-display) {
             @apply p-2 px-4;
             @apply border border-neutral-400 rounded-full;
         }

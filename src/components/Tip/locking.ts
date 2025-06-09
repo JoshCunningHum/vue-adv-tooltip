@@ -19,6 +19,7 @@ export const useTipLocking = ({ options: _options }: TipLockingProps) => {
     const {
         hover,
         locked,
+        stacked,
         origin: { locked: origin, normal: originNormal },
         dir: { locked: dir },
         containerSize: size,
@@ -49,8 +50,7 @@ export const useTipLocking = ({ options: _options }: TipLockingProps) => {
         [lx, ly],
         ([mx, my]) => {
             // Disable syncing when hovering on tip
-            // TODO: Add check for when this tooltip is not in the top of the stack
-            if (hover.tip.value) return;
+            if (hover.tip.value || stacked.value) return;
 
             // Container bounds
             const [cl, ct] = extpos(origin);
@@ -78,11 +78,16 @@ export const useTipLocking = ({ options: _options }: TipLockingProps) => {
 
     // Unlock when trigger and tip is unhovered
     // TODO: Detect option for onlyUnlockOnClick
-    watch([hover.tip, hover.trigger], async () => {
-        await promiseTimeout(10);
-        if (hover.tip.value || hover.trigger.value) return;
-        set(locked, false);
-    });
+    watch(
+        [hover.tip, hover.trigger],
+        async () => {
+            if (hover.tip.value || hover.trigger.value || stacked.value) return;
+            set(locked, false);
+        },
+        {
+            flush: "post",
+        }
+    );
 
     onBeforeUnmount(() => set(locked, false));
     onBeforeMount(() => set(locked, false));

@@ -9,6 +9,7 @@ export const TT_TELEPORT_ID = "__tooltips__layer__";
 export const TT_CONFIG_KEY: InjectionKey<TooltipPluginOptions> = Symbol("___adv_tooltip___");
 
 export const TT_MOUSE_HISTORY_DELAY = 4; // Use for calculating mouse direction
+export const TT_RENDER_DELAYS_MS = 10; // Use for 'waiting' for render updates
 
 // Default Tooltip Options
 export const TT_DEFAULTS: TooltipOptionBase = {
@@ -25,3 +26,4 @@ export const TT_DEFAULTS: TooltipOptionBase = {
 
 // DEV
 export const dev = import.meta.env.DEV;
+// export const dev = false;

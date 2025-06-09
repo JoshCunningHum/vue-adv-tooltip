@@ -11,8 +11,8 @@ export const useSharedMouse = createSharedComposable(() => {
 
     // Record Last X,Y for dx/dy
 
-    const lx = computed(() => hx.value[hx.value.length - 1].snapshot);
-    const ly = computed(() => hy.value[hy.value.length - 1].snapshot);
+    const lx = computed(() => hx.value.at(-1)!.snapshot);
+    const ly = computed(() => hy.value.at(-1)!.snapshot);
 
     const { x: dx, y: dy } = toRefs(
         computed(() => ({

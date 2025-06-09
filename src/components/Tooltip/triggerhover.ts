@@ -3,7 +3,7 @@
 // * The tooltip component can accept multiple targets on which to apply the tooltip reveal
 // * Dynamic handling of binding/unbinding is quite complex, especially these are found inside a <slot /> which makes it even more difficult
 
-import { TT_TRIGGER } from "@/constants";
+import { TT_RENDER_DELAYS_MS, TT_TRIGGER } from "@/constants";
 import { promiseTimeout, useMutationObserver } from "@vueuse/core";
 import { onBeforeUnmount, onMounted, ShallowRef } from "vue";
 
@@ -41,7 +41,7 @@ export const useTriggerBinder = ({
         hoverCounter++;
     };
     const mouseLeave = async () => {
-        await promiseTimeout(10);
+        await promiseTimeout(TT_RENDER_DELAYS_MS);
         hoverCounter--;
         if (hoverCounter === 0) event.mouseLeave();
     };
