@@ -8,6 +8,21 @@ I want to implement that in some of my apps, that is why I made this library.
 
 P.S. Credits to [Jet UI Library](https://github.com/sjmc11/jet-ui.git#v0.0.1) as I used the library as a template for this plugin.
 
+### TODO
+
+-   [x] Following Container
+-   [x] Auto Placement
+-   [ ] Nesteble tooltips
+    -   [x] components
+    -   [ ] directives
+-   [ ] Directive Support
+-   [ ] Optimizations
+    -   [x] Shared mouse move listeners
+    -   [ ] Better locking sequence
+    -   [ ] Optional mutation observer for auto-detecting nested tooltips
+-   [ ] Tooltip Options
+    -   [ ] ... too many to list
+
 ## Features
 
 ### Quick Terminology
@@ -25,14 +40,17 @@ Before we go with the features, its important which 'thing' I am talking about.
 ### Following Container
 
 The tip will follow the mouse, as long as it is hovering on a trigger.
+![follow](./docs/gifs/follow-mouse.gif)
 
 ### Auto Placement
 
 Since different parts of the site can contain a trigger, the tip can auto-adjust on where it should be placed, relative to the mouse. This is also overrideable if you wish to show tips only on specific direction.
+![follow](./docs/gifs/auto-placement.gif)
 
 ### Nestable tooltips
 
 You can nest tooltips! and you can select which triggers the inner tooltips to appear; delay/keypress.
+![follow](./docs/gifs/nested-tooltip.gif)
 
 ### Directive/Component
 
