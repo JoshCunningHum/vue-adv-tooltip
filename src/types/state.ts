@@ -1,7 +1,7 @@
 // Contains global tooltip state management
 
 import { TT_MOUSE_HISTORY_DELAY } from "@/constants";
-import { createSharedComposable, toRefs, useMouse, useRefHistory } from "@vueuse/core";
+import { createSharedComposable, reactify, useMouse, useRefHistory } from "@vueuse/core";
 import { computed } from "vue";
 
 export const useSharedMouse = createSharedComposable(() => {
@@ -10,24 +10,16 @@ export const useSharedMouse = createSharedComposable(() => {
     const { history: hy } = useRefHistory(my, { capacity: TT_MOUSE_HISTORY_DELAY });
 
     // Record Last X,Y for dx/dy
-
     const lx = computed(() => hx.value.at(-1)!.snapshot);
     const ly = computed(() => hy.value.at(-1)!.snapshot);
 
-    const { x: dx, y: dy } = toRefs(
-        computed(() => ({
-            x: mx.value - lx.value,
-            y: my.value - ly.value,
-        }))
-    );
+    const dx = computed(() => mx.value - lx.value);
+    const dy = computed(() => my.value - ly.value);
 
     // Normalize dx/dy
-    const { x: ndx, y: ndy } = toRefs(
-        computed(() => ({
-            x: Math.sign(dx.value),
-            y: Math.sign(dy.value),
-        }))
-    );
+    const MathSign = reactify(Math.sign);
+    const ndx = MathSign(dx);
+    const ndy = MathSign(dy);
 
     return {
         x: mx,
