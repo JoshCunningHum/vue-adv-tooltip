@@ -39,7 +39,7 @@ export interface TooltipLayerContext {
 
 <script setup lang="ts">
 import { dev, TT_CONFIG_KEY, TT_DEFAULTS, TT_TELEPORT_ID } from "@/constants";
-import { computed, ComputedRef, inject, nextTick, Ref, watch } from "vue";
+import { computed, ComputedRef, inject, nextTick, Ref } from "vue";
 
 const props = defineProps<TooltipLayerProps>();
 

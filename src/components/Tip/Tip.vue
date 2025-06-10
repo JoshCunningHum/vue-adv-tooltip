@@ -1,14 +1,14 @@
 <script lang="ts">
+import { dev, TT_TRIGGER } from "@/constants";
 import { TooltipStyles } from "@/types/common";
 import { set, useElementSize, watchImmediate } from "@vueuse/core";
-import { computed, onMounted, triggerRef, useTemplateRef } from "vue";
+import { computed, onMounted, useTemplateRef } from "vue";
+import Coord from "../Debug/Coord.vue";
 import { AdvTooltipProps, injectAdvTooltipContext } from "../Tooltip/AdvTooltip.vue";
 import { setpos } from "../utils/pos";
 import { serializehtml } from "../utils/serialize";
 import { useTipLocking } from "./locking";
 import { useTipCompute } from "./positioning";
-import Coord from "../Debug/Coord.vue";
-import { dev, TT_TRIGGER } from "@/constants";
 
 export interface TipProps {
     options: AdvTooltipProps;
