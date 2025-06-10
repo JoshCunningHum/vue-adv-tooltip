@@ -1,14 +1,14 @@
 <script lang="ts">
 import { TooltipStyles } from "@/types/common";
-import { useElementSize, watchImmediate } from "@vueuse/core";
-import { computed, useTemplateRef } from "vue";
+import { set, useElementSize, watchImmediate } from "@vueuse/core";
+import { computed, onMounted, triggerRef, useTemplateRef } from "vue";
 import { AdvTooltipProps, injectAdvTooltipContext } from "../Tooltip/AdvTooltip.vue";
 import { setpos } from "../utils/pos";
 import { serializehtml } from "../utils/serialize";
 import { useTipLocking } from "./locking";
 import { useTipCompute } from "./positioning";
 import Coord from "../Debug/Coord.vue";
-import { dev } from "@/constants";
+import { dev, TT_TRIGGER } from "@/constants";
 
 export interface TipProps {
     options: AdvTooltipProps;
@@ -41,6 +41,18 @@ const {
 
 // Handle Locking
 useTipLocking({ options });
+
+// Check for any trigger
+const nested = context.nested;
+function checkNested() {
+    const c = container.value;
+    if (!c) return;
+
+    const trigger = c.querySelector(`.${TT_TRIGGER}`);
+    set(nested, !!trigger);
+}
+
+onMounted(checkNested);
 </script>
 
 <template>
@@ -77,6 +89,7 @@ useTipLocking({ options });
                         locked,
                         tip,
                         trigger,
+                        nested,
                         normal,
                         lock,
                         dir,

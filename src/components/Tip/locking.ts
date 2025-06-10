@@ -23,11 +23,15 @@ export const useTipLocking = ({ options: _options }: TipLockingProps) => {
         origin: { locked: origin, normal: originNormal },
         dir: { locked: dir },
         containerSize: size,
+        nested,
     } = injectAdvTooltipContext();
+
+    // TODO: Add a check to force-lock on unnested tooltips
+    const lock = () => nested.value && set(locked, true);
 
     // # Locked MS Delay
     const delay = computed(() => options.value.delayMs || TT_DEFAULTS.delayMs!);
-    const { start, stop } = useTimeoutFn(() => set(locked, true), delay);
+    const { start, stop } = useTimeoutFn(lock, delay);
 
     // When hovering the trigger, wait for DEFAULT_SECONDS to lock
     watchImmediate(hover.trigger, (hovered) => {
@@ -43,7 +47,7 @@ export const useTipLocking = ({ options: _options }: TipLockingProps) => {
         onKeyStroke(
             options.value.lockKey,
             () => {
-                if (!locked.value) set(locked, true);
+                if (!locked.value) lock();
             },
             { dedupe: true }
         );
