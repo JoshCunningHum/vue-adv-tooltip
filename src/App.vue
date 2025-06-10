@@ -5,25 +5,20 @@ import TooltipLayer from "./components/TooltipLayer/TooltipLayer.vue";
 import { serializehtml } from "./components/utils/serialize";
 import { dev } from "./constants";
 import { useSharedMouse } from "./types/state";
+import { theme } from "./themes";
 
 const { ndx, ndy, lx, ly, x, y } = useSharedMouse();
 </script>
 
 <template>
-    <TooltipLayer clip-parent lock-key="t" unlock-key="Escape" :delay-ms="250" />
+    <TooltipLayer clip-parent :theme="theme.stellaris" />
     <div class="h-screen root w-screen">
         <div class="cont h-full">
             <div class="flex">
                 <AdvTooltip>
                     <div class="w-min">Static Test</div>
-                    <template #tip="{ locked }">
-                        <div
-                            :class="{
-                                'border border-red-500': locked,
-                            }"
-                        >
-                            Wow great!
-                        </div>
+                    <template #tip>
+                        <div>Wow great!</div>
                     </template>
                 </AdvTooltip>
                 <AdvTooltip direction="topright">
@@ -36,11 +31,8 @@ const { ndx, ndy, lx, ly, x, y } = useSharedMouse();
                                 <div class="underline">This is the tooltip</div>
                                 <template #tip>
                                     <div>This is a tooltip inside tooltip</div>
-                                    <AdvTooltip>
+                                    <AdvTooltip text="A very nested tooltip">
                                         <div class="underline">What if you hover here?</div>
-                                        <template #tip>
-                                            <div>A very nested tooltip</div>
-                                        </template>
                                     </AdvTooltip>
                                 </template>
                             </AdvTooltip>

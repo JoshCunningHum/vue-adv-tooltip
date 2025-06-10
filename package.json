@@ -19,6 +19,7 @@
         "build-storybook": "storybook build"
     },
     "dependencies": {
+        "@fontsource-variable/dm-sans": "^5.2.6",
         "@vueuse/core": "^13.1.0",
         "vue": "^3.4.37"
     },

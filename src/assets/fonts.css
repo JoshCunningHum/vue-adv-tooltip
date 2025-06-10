@@ -1,0 +1,22 @@
+@font-face {
+    font-family: 'Century Gothic';
+    src: url('./fonts/centurygothic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Century Gothic';
+    src: url('./fonts/centurygothic_bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+.century-gothic {
+    font-family: 'Century Gothic', Arial, Helvetica, sans-serif;
+    font-weight: normal;
+}
+
+.dmsans {
+    font-family: 'DM Sans Variable', sans-serif;
+}
